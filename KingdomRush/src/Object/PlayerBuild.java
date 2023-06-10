@@ -51,6 +51,11 @@ public class PlayerBuild {
     public String getName(){
         return name;
     }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+    
     public void setButtonPosition(int x, int y, int height, int width){
         this.x = x;
         this.y = y;
