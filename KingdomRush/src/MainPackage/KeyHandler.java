@@ -22,6 +22,7 @@ public class KeyHandler implements KeyListener{
     SaveLoad saveLoad;
     public KeyHandler(GamePanel gamepanel){
         this.gamepanel = gamepanel;
+        saveLoad =new SaveLoad(gamepanel);
     }
     
     @Override

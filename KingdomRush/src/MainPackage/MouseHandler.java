@@ -18,6 +18,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener{
     
     public MouseHandler(GamePanel gamepanel){
         this.gamepanel = gamepanel;
+        saveLoad =new SaveLoad(gamepanel);
     }
     @Override
     public void mouseClicked(MouseEvent e) {
