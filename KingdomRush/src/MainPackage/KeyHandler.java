@@ -67,7 +67,9 @@ public class KeyHandler implements KeyListener{
                     gamepanel.gameState = gamepanel.playState;
                 }
             }else if(code == KeyEvent.VK_B){
-                gamepanel.aSetter.setObject(gamepanel.getTowerArrayList());
+                int x = gamepanel.player.getCenterPosX();
+                int y = gamepanel.player.getCenterPosY();
+                gamepanel.towermanager.addNewTower(x, y);
             }
         }
     }

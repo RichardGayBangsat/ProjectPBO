@@ -77,15 +77,23 @@ public class EnemyManager {
             enemies.get(x).draw(g2);
         }
     }
-    public void checkAttackedArea(int x, int y, int width, int height, int damage){
+    public boolean checkAttackedArea(int x, int y, int width, int height, int damage){
+        boolean isDamaged = false;
         for(int i = 0; i < enemies.size(); i++){
-            while(enemies.size() > i && enemies.get(i).isAttacked(x,y,width,height,damage)){
-                enemies.remove(i);
+            if(enemies.get(i).isAttacked(x,y,width,height,damage)){
+                isDamaged = true;
+            }
+            while(enemies.size() > i && enemies.get(i).isDead()){
+                if(enemies.size() != 0)enemies.remove(i);
+                if(enemies.size() > i){ 
+                    enemies.get(i).isAttacked(x,y,width,height,damage);
+                }
             }
         }
         if(enemies.size() == 0){
             isEnemyCounterEnd();
         }
+        return isDamaged;
     }
     public void isEnemyCounterEnd(){
         if(enemyCounter == 0 && enemies.size() == 0){
@@ -98,33 +106,5 @@ public class EnemyManager {
         enemyCounter = numsOfEnemy;
         spawnCounter = 1;
         setEnemyLevel();
-    }
-    public void checkProjectileAttackedArea(int x, int y, int width, int height, int damage,ArrayList<Projectile> a,int index){
-        for(int i = 0; i < enemies.size(); i++){
-            if(enemies.get(i).isAttackedProjectile(x,y,width,height,damage,a,index)){
-                enemies.remove(i);
-            }
-        }
-        if(enemies.size() == 0){
-            isEnemyCounterEnd();
-        }
-    }
-    public void checkProjectileAttackedArea2(int x, int y, int width, int height, int damage,ArrayList<Projectile> a,int index){
-        for(int i = 0; i < enemies.size(); i++){
-            if(enemies.get(i).isAttackedProjectile(x,y,width,height,damage,a,index)){
-                enemies.remove(i);
-            }else{
-                break;
-            }
-        }
-        if(enemies.size() == 0){
-            isEnemyCounterEnd();
-        }
-    }
-    public int getEnemiesSize(){
-        return enemies.size();
-    }
-    public Enemy getEnemyAt(int i){
-        return enemies.get(i);
     }
 }

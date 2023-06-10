@@ -1,4 +1,4 @@
-    /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -47,8 +47,9 @@ public class Necremencer extends Enemy{
     }
     
     @Override
-    public void draw(Graphics2D g2){    
+    public void draw(Graphics2D g2){   
         g2.drawImage(animation.get(spriteIndex), posX - 40, posY - 80, width*2, height*2, null);
+        
         drawHealthBar(g2);
     }
 }

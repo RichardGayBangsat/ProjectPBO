@@ -69,17 +69,4 @@ public class MapsManager {
             }                       
         }
     }
-    public String getMapTile(int x,int y){
-        return mapsmodel[y][x];
-    }
-    public void printValid(){
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 16; j++) {
-                if(mapsmodel[i][j].equals("14")){
-                    System.out.println("x : "+j);
-                    System.out.println("y : "+i);
-                }
-            }
-        }
-    }
 }

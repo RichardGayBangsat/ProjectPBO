@@ -4,33 +4,56 @@
  */
 package Object;
 
-import MainPackage.GamePanel;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 /**
  *
- * @author USER
+ * @author richa
  */
-public class Projectile extends Character{
+public class Projectile extends Object{
+    protected int speed = 6;
+    protected int directionCode;
+    protected int damage = 50;
+    protected int stepNumber;
+    protected BufferedImage image;
     
-    protected int speed;
-    
-    public Projectile(GamePanel gp, Tower a) {
-        super(gp);
-        this.speed = 10;
-        this.posX = a.getPosX(); 
-        this.posY = a.getPosY(); 
-        this.height=gp.tileSize/4;
-        this.width=gp.tileSize;
+    public Projectile(int x, int y, int width, int height, BufferedImage image, int direction){
+        this.posX = x - width / 2;
+        this.posY = y - height / 2;
+        this.width = width;
+        this.height = height;
+        this.image = image;
+        this.directionCode = direction;
+        stepNumber = 0;
     }
-    
-
-    public void setPosX(int x) {
-        this.posX = x;
+    public void update(){
+        if(directionCode == 1){
+            posY -= speed;
+        }else if(directionCode == 2){
+            posY += speed;
+        }else if(directionCode == 3){
+            posX -= speed;
+        }else if(directionCode == 4){
+            posX += speed;
+        }
+        stepNumber++;
     }
-    public void setPosY(int y){
-        this.posY = y;
+    public void draw(Graphics2D g2){
+//        g2.drawRect(posX, posY, width, height);
+        g2.drawImage(image, posX, posY, width, height, null);
     }
-    public void setProjectileAttack(EnemyManager enemymanager){
-        enemymanager.checkAttackedArea(posX, posY, width, height, 20);
+    public boolean outOfRange(int range){
+        if(stepNumber * speed >= range){
+            return true;
+        }
+        return false;
+    }
+    public boolean isHitEnemy(EnemyManager EManager){
+        if(EManager.checkAttackedArea(posX, posY, width, height, damage)){
+            return true;
+        }
+        return false;
     }
 }

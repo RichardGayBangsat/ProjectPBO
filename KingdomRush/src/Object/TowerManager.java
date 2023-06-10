@@ -5,91 +5,77 @@
 package Object;
 
 import MainPackage.GamePanel;
-import Object.Tower;
+import Maps.MapsModel;
+import PlayerBase.PlayerBase;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javax.imageio.ImageIO;
+
 /**
  *
- * @author USER
+ * @author richa
  */
 public class TowerManager {
-    protected GamePanel gamePanel;
+    protected HashMap<String, Tower> towers;
+    protected GamePanel gamepanel;
+    protected PlayerBase playerbase;
+    protected int towerPrice;
+    protected ArrayList<BufferedImage> images;
     
-    protected  ArrayList<Tower> towers;
-
-    public TowerManager(GamePanel gamePanel) {
-        this.towers=new ArrayList<>();
-        this.gamePanel = gamePanel;
+    public TowerManager(GamePanel gamepanel, PlayerBase playerbase){
+        towers = new HashMap<>();
+        this.gamepanel = gamepanel;
+        this.playerbase = playerbase;
+        setupTowerImages();
+        towerPrice = 150;
     }
-    public void addTower(){
-        towers.add(new Tower(gamePanel));
-    }
-    public void setWorldxTower(int x){
-        towers.get(towers.size()-1).posX=x;
-    }
-    public void setWorldyTower(int y){
-        towers.get(towers.size()-1).posY=y;
-    }
-    public void draw(Graphics2D g2){
-        int code;
-        EnemyManager enemymanager=gamePanel.getEnemyManager();
-        for (Tower tower : towers) {
-            tower.draw(g2, gamePanel);
-            boolean shootable = false;
-            code = 0;
-            for (int j = 0; j < enemymanager.getEnemiesSize(); j++) {
-                Enemy enemy = enemymanager.getEnemyAt(j);
-                if (enemy.getPosX() > tower.getPosX() && enemy.getPosX() < tower.getPosX() + gamePanel.tileSize* 3) {
-                    if (enemy.getPosY()<tower.getPosY()+gamePanel.tileSize && enemy.getPosY()>tower.getPosY()) {
-                        tower.turnOn();
-                        code = 1; // Right
-                        shootable = true;
-                    }
-                } else if (enemy.getPosX() < tower.getPosX() && enemy.getPosX() > tower.getPosX() - gamePanel.tileSize * 3) {
-                    if (enemy.getPosY()<tower.getPosY()+gamePanel.tileSize && enemy.getPosY()>tower.getPosY()) {
-                        tower.turnOn();
-                        code = 2; // Left
-                        shootable = true;
-                    }
-                }else if (enemy.getPosX() <= tower.getPosX()+gamePanel.tileSize && enemy.getPosX()>=tower.getPosX()) {
-                    if (tower.getPosY()<enemy.getPosY() ) {
-                        tower.turnOn();
-                        code = 3; // Down
-                        shootable = true;
-                    }else {
-                        tower.turnOn();
-                        code = 4; // up
-                        shootable = true;
-                    }
-                } 
-                if (shootable) {
-                    break;
-                }
+    public void setupTowerImages(){
+        images = new ArrayList<>();
+        try{
+            for(int x = 0; x < 11; x++){
+                images.add(ImageIO.read(getClass().getResource("/assets/tower/tower" + String.valueOf(x+1) + ".png")));
             }
-            if (shootable) {
-                if (code == 1) {
-                    tower.drawProjectile(g2, gamePanel);
-                } else if (code == 2) {
-                    tower.drawProjectileBackward(g2, gamePanel);
-                } else if (code == 3){
-                    tower.drawProjectileDownward(g2, gamePanel);
-                } else if (code == 4){
-                    tower.drawProjectileUpward(g2, gamePanel);
-                }
-                tower.turnOff();
+            
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    public void addNewTower(int playerX, int playerY){
+        int x = playerX / gamepanel.tileSize;
+        int y = playerY / gamepanel.tileSize;
+        String newkey = String.valueOf(x) + "$" + String.valueOf(y);
+        if(MapsModel.checkModel(x, y, "14") && !towers.containsKey(newkey)){
+            if(playerbase.getCoin() >= towerPrice){
+                x = x * gamepanel.tileSize;
+                y = y * gamepanel.tileSize;
+                towers.put(newkey, new Tower(x, y, gamepanel.tileSize + gamepanel.tileSize / 2, gamepanel.tileSize));
+                playerbase.setCoin(playerbase.getCoin() - towerPrice);
+            }else{
+                System.out.println("not enough coin");
             }
-            for (int j = 0; j < tower.getMagazineSize(); j++) {
-                if(code!=3){
-                    tower.setProjectileAttack(enemymanager, j);
-                }else{
-                    tower.setProjectileAttack2(enemymanager, j);
-                }
+        }else{
+            System.out.println("position not valid");
+        }
+    }
+    
+    public void update(){
+        if(towers.size() > 0){
+            for(Map.Entry<String, Tower> entry : towers.entrySet()){
+                Tower temp = entry.getValue();
+                temp.update(gamepanel.getEnemyManager());
             }
         }
     }
-    public ArrayList<Tower> getTowerArrayList(){
-        return this.towers;
+    public void draw(Graphics2D g2){
+        if(towers.size() > 0){
+            for(Map.Entry<String, Tower> entry : towers.entrySet()){
+                Tower temp = entry.getValue();
+                temp.draw(g2,images.get(temp.getAnimationIndex()));
+            }
+        }
     }
-    
-    
 }

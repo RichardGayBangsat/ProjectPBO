@@ -5,194 +5,149 @@
 package Object;
 
 import MainPackage.GamePanel;
-import Sound.Sound;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
  *
- * @author USER
+ * @author richa
  */
-public class Tower  extends Character{
+public class Tower extends Object{
+    // HOT CONDITION & RANGE
+    protected boolean shootable;
+    protected int maxRange = 5 * 60;
+    //COOLDOWN SHOOT
+    protected int cooldownShoot = 60;
+    protected int currCooldown = 1;
+    // SHOT DIRECTION
+    protected String shootDirection = "4";
+    // MAGAZINE
+    protected ArrayList<Projectile> magazine;
+    // TOWER ANIMATION
+    protected int animationCooldown = 10;
+    protected int currAnimationCD;
+    protected final int maxAnimationIndex = 11;
+    protected int currAnimationIndex;
     
-    protected int Damage = 20;
-    protected int posX,posY;
-    protected boolean shoot;
-    protected int cooldown;
-    protected String name;
-    protected boolean collision=true;
-    protected BufferedImage image;
-    protected Projectile projectile = new Projectile(gamepanel,this);
-    protected ArrayList<BufferedImage> fireballright = new ArrayList<>();
-    protected ArrayList<BufferedImage> fireballLeft = new ArrayList<>();
-    protected ArrayList<BufferedImage> fireballUp = new ArrayList<>();
-    protected ArrayList<BufferedImage> fireballDown = new ArrayList<>();
-    protected ArrayList<Projectile> magazine = new ArrayList<>();
-    public Tower(GamePanel gp) {
-        super(gp);
-        try{
-            image = ImageIO.read(getClass().getResource("/assets/tower/tower1.png"));
-            setUpProjectileImage(fireballright, fireballLeft, fireballUp, fireballDown);
-            this.height=gp.tileSize*2;
-            this.width=gp.tileSize;
-            this.shoot = false;
-            this.cooldown=0;
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        
+    public Tower(int x, int y, int height, int width){
+        setupNewTower(x,y,height,width);
+        magazine = new ArrayList<>();
+        shootable = false;
+        currAnimationCD = 1;
+        currAnimationIndex = 0;
     }
+    public void setupNewTower(int x, int y, int height, int width){
+        posX = x;
+        posY = y;
+        this.height = height;
+        this.width = width;
+    }
+    
+    public void update(EnemyManager EManager) {
+        // UPDATE ANIMATION 
+        currAnimationCD++;
+        if(currAnimationCD == animationCooldown){
+            currAnimationIndex++;
+            if(currAnimationIndex == maxAnimationIndex){
+                currAnimationIndex = 0;
+            }
+            currAnimationCD = 1;
+        }
+        // ADD NEW MAGAZINE 
+        checkShootableArea(EManager);
+        if(shootable){
+            currCooldown++;
+            if(currCooldown == cooldownShoot){
+                addMagazine(shootDirection);
+                currCooldown = 1;
+            }
+        }
+        // UPDATE MAGAZINE POSITION
+        for(int x = 0; x < magazine.size(); x++){
+            Projectile currMagazine = magazine.get(x);
+            currMagazine.update();
+            while(magazine.size() > 0 && (currMagazine.outOfRange(maxRange) || currMagazine.isHitEnemy(EManager))){
+                magazine.remove(x);
+            }
+        }
+    }
+    public void checkShootableArea(EnemyManager EManager){
+        if(EManager.checkAttackedArea(posX-maxRange, posY, maxRange, height, 0)){
+            shootable = true;
+            shootDirection = "3";
+        }else if(EManager.checkAttackedArea(posX, posY-maxRange, width, maxRange, 0)){
+            shootable = true;
+            shootDirection = "1";
+        }else if(EManager.checkAttackedArea(posX, posY, maxRange, height, 0)){
+            shootable = true;
+            shootDirection = "4";
+        }else if(EManager.checkAttackedArea(posX, posY, width, maxRange, 0)){
+            shootable = true;
+            shootDirection = "2";
+        }else{
+            shootable = false;
+        }
+    }
+    public void addMagazine(String code){
+        int x,y,h,w;
+        x = posX + width / 2;
+        y = posY + height / 4;
+        if(code.equals("1") || code.equals("2")){
+            w = 40;
+            h = 60;
+        }else{
+            w = 60;
+            h = 40;
+        }
+        BufferedImage magazineImage = null;
+        try {
+            magazineImage = ImageIO.read(getClass().getResource("/assets/tower/magazine"+code+".png"));
+        } catch (IOException ex) { ex.printStackTrace(); }
+        Projectile newmagazine = new Projectile(x, y, w, h, magazineImage, Integer.parseInt(code));
+        magazine.add(newmagazine);
+    }
+    
+    public void draw(Graphics2D g2, BufferedImage image){
+        g2.drawImage(image, posX, posY - height / 3 - 10, width, height, null);
+        // draw magazine
+        for(int x = 0; x < magazine.size(); x++){
+            magazine.get(x).draw(g2);
+        }
+    }
+    
+    // GETTER SETTER
 
     public int getPosX() {
         return posX;
     }
-
     public void setPosX(int posX) {
         this.posX = posX;
     }
-
     public int getPosY() {
         return posY;
     }
-    public void setPosY(int a) {
-        this.posY = a;
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
-    public void draw(Graphics2D g2,GamePanel gp){
-        g2.drawImage(image,posX,posY,gp.tileSize,gp.tileSize*2,null );
+    public int getHeight() {
+        return height;
     }
-    public void drawProjectile(Graphics2D g2,GamePanel gp){
-        if(this.cooldown==0){
-            shootProjectile();
-            this.cooldown=27;
-        }else{
-            cooldown-=1;
-        }
-        for (int i = 0; i < magazine.size(); i++) {
-            g2.drawImage(fireballright.get(0),magazine.get(i).posX,magazine.get(i).posY+gp.tileSize,
-                    magazine.get(i).width,magazine.get(i).height,null );
-        }
-        
-        
-        moveProjectile();
+    public void setHeight(int height) {
+        this.height = height;
     }
-    public void drawProjectileBackward(Graphics2D g2,GamePanel gp){
-        if(this.cooldown==0){
-            shootProjectile();
-            this.cooldown=27;
-        }else{
-            cooldown-=1;
-        }
-        for (int i = 0; i < magazine.size(); i++) {
-            g2.drawImage(fireballLeft.get(0),magazine.get(i).posX,magazine.get(i).posY+gp.tileSize,
-                    magazine.get(i).width,magazine.get(i).height,null );
-        }
-        moveProjectileBackward();
+    public int getWidth() {
+        return width;
     }
-    public void drawProjectileUpward(Graphics2D g2,GamePanel gp){
-        if(this.cooldown==0){
-            shootProjectile();
-            this.cooldown=27;
-        }else{
-            cooldown-=1;
-        }
-        for (int i = 0; i < magazine.size(); i++) {
-            g2.drawImage(fireballUp.get(0),magazine.get(i).posX+gp.tileSize/2-10,magazine.get(i).posY,
-                    magazine.get(i).height,magazine.get(i).width/2,null );
-        }
-        moveProjectileUpWard();
+    public void setWidth(int width) {
+        this.width = width;
     }
-    public void drawProjectileDownward(Graphics2D g2,GamePanel gp){
-        if(this.cooldown==0){
-            shootProjectile();
-            this.cooldown=27;
-        }else{
-            cooldown-=1;
-        }
-        for (int i = 0; i < magazine.size(); i++) {
-            g2.drawImage(fireballDown.get(0),magazine.get(i).posX+gp.tileSize/2-10,magazine.get(i).posY+gp.tileSize*2,
-                    magazine.get(i).height,magazine.get(i).width/4,null );
-        }
-        moveProjectileDownWard();
+    public int getAnimationIndex(){
+        return currAnimationIndex;
     }
-     
-    public void shootProjectile(){
-        magazine.add(new Projectile(gamepanel,this));
-        magazine.get(magazine.size()-1).setPosX(this.posX);
-        magazine.get(magazine.size()-1).setPosY(this.posY);
-    }
-    public int getProjectileX(){
-        return projectile.posX;
-    }
-    public void moveProjectile(){
-        if(!magazine.isEmpty()){
-            magazine.get(0).posX+=4;
-        }
-    }
-    public void moveProjectileBackward(){
-        if(!magazine.isEmpty()){
-            magazine.get(0).posX-=4;
-        }
-    }
-    public void moveProjectileUpWard(){
-        if(!magazine.isEmpty()){
-            magazine.get(0).posY-=4;
-        }
-    }
-    public void moveProjectileDownWard(){
-        if(!magazine.isEmpty()){
-            magazine.get(0).posY+=4;
-        }
-    }
-    public void setProjectileAttack(EnemyManager enemymanager, int i){
-        enemymanager.checkProjectileAttackedArea(magazine.get(i).getPosX(), magazine.get(i).getPosY(), 
-                magazine.get(i).width, magazine.get(i).height, 20,this.magazine,i);
-    }
-    public void setProjectileAttack2(EnemyManager enemymanager, int i){
-        enemymanager.checkProjectileAttackedArea2(magazine.get(i).getPosX(), magazine.get(i).getPosY(), 
-                magazine.get(i).width, magazine.get(i).height, 20,this.magazine,i);
-    }
-    public int getMagazineSize(){
-        return this.magazine.size();
-    }
-    public void turnOn(){
-        this.shoot = true;
-    }
-    public void turnOff(){
-        this.shoot = false;
-    }
-    public boolean shootable(){
-        return shoot;
-    }
-    public void setUpProjectileImage(ArrayList<BufferedImage> a,ArrayList<BufferedImage> b,ArrayList<BufferedImage> c,ArrayList<BufferedImage> d){
-        try{
-            BufferedImage temp1 = ImageIO.read(getClass().getResource("/assets/projectile/1.png"));
-            BufferedImage temp2 = ImageIO.read(getClass().getResource("/assets/projectile/2.png"));
-            a.add(temp1);
-            a.add(temp2);
-            BufferedImage temp3 = ImageIO.read(getClass().getResource("/assets/projectile/3.png"));
-            BufferedImage temp4 = ImageIO.read(getClass().getResource("/assets/projectile/4.png"));
-            b.add(temp3);
-            b.add(temp4);
-            BufferedImage temp5 = ImageIO.read(getClass().getResource("/assets/projectile/5.png"));
-            BufferedImage temp6 = ImageIO.read(getClass().getResource("/assets/projectile/6.png"));
-            c.add(temp5);
-            c.add(temp6);
-            BufferedImage temp7 = ImageIO.read(getClass().getResource("/assets/projectile/7.png"));
-            BufferedImage temp8 = ImageIO.read(getClass().getResource("/assets/projectile/8.png"));
-            d.add(temp7);
-            d.add(temp8);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-    public int getHeight(){
-        return this.height;
-    }
-    public int getWidth(){
-        return this.width;
-    }
-    
 }

@@ -182,6 +182,20 @@ public class Player extends Character{
         return builds;
     }
     
+    public String getStatusByString(String value){
+        String result = value;
+        if(value.equals("ATCK")){
+            result += " " + String.valueOf(attackDamage);
+        }else if(value.equals("ASPD")){
+            result += " " + String.valueOf(attackSpeed);
+        }else{
+            result += " " + String.valueOf(critDamage);
+        }
+        
+        return result;
+    }
+    
+    // GETTER SETTER
     public int getAttackSpeed(){
         return attackSpeed;
     }
@@ -200,17 +214,10 @@ public class Player extends Character{
     public void setAttack(int value){
         attackDamage = value;
     }
-    
-    public String getStatusByString(String value){
-        String result = value;
-        if(value.equals("ATCK")){
-            result += " " + String.valueOf(attackDamage);
-        }else if(value.equals("ASPD")){
-            result += " " + String.valueOf(attackSpeed);
-        }else{
-            result += " " + String.valueOf(critDamage);
-        }
-        
-        return result;
+    public int getCenterPosX(){
+        return posX + width/2;
+    }
+    public int getCenterPosY(){
+        return posY + height/2;
     }
 }

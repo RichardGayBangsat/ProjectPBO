@@ -5,11 +5,8 @@
 package MainPackage;
 import PlayerBase.PlayerBase;
 import Maps.MapsManager;
-import Object.AssetSetter;
 import Object.EnemyManager;
 import Object.Player;
-import Object.Tower;
-import Object.Enemy;
 import Object.TowerManager;
 import PlayerBase.Shop;
 import UI.*;
@@ -20,7 +17,6 @@ import javax.swing.JPanel;
 import java.awt.MouseInfo;
 import java.awt.PointerInfo;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.imageio.ImageIO;
 /**
  *
@@ -45,6 +41,7 @@ public class GamePanel extends JPanel implements Runnable{
     Graphics2D g2;
     Player player;
     EnemyManager enemymanager;
+    TowerManager towermanager;
     MapsManager mapsmanager = new MapsManager(this);
     //  KEY AND MOUSE HANDLER
     KeyHandler keyhandler = new KeyHandler(this);
@@ -60,16 +57,6 @@ public class GamePanel extends JPanel implements Runnable{
     
     PlayerBase playerbase;
     
-    //TOWER
-    public AssetSetter aSetter = new AssetSetter(this);
-    public TowerManager towermanager = new TowerManager(this);
-    ArrayList<Tower> towerlist = new ArrayList<>();
-    
-    //MONSTER
-    ArrayList<Character> Monster = new ArrayList<>();
-    
-    //projectile
-    ArrayList<Character> entityList=new ArrayList<>();
     Thread gameThread;
     
     // GAME MECHANICS
@@ -104,6 +91,7 @@ public class GamePanel extends JPanel implements Runnable{
         homemenuUI = new HomeMenuUI(this, playerbase);
         
         enemymanager = new EnemyManager(this, playerbase);
+        towermanager = new TowerManager(this, playerbase);
         
         gameState = titleState;
     }
@@ -153,6 +141,7 @@ public class GamePanel extends JPanel implements Runnable{
     public void update(){
         if(gameState == playState && gameOver == false){
             playStateUpdate();
+            towermanager.update();
         }
     }
     
@@ -168,21 +157,12 @@ public class GamePanel extends JPanel implements Runnable{
             if(mouseTarget == true){
                 drawMouseTarget();
             }
+            towermanager.draw(g2);
             player.draw(g2);
             if(onStage == true){
                 enemymanager.draw(g2);
             }
             homemenuUI.draw(g2);
-            for (int i = 0; i < towerlist.size(); i++) {
-                towerlist.get(i).draw(g2, this);
-            }
-            int code=0;
-            int ctr=0;
-            for (int i = 0; i < towerlist.size(); i++) {
-                ctr+=towerlist.get(i).getMagazineSize();
-            }
-            enemymanager.draw(g2);
-            towermanager.draw(g2);
             playerbase.draw(g2);
             informationBoxUI.draw(g2, playerbase.getStage(), playerbase.getAllitems());
             if(onStage == false){
@@ -240,6 +220,9 @@ public class GamePanel extends JPanel implements Runnable{
     public EnemyManager getEnemyManager(){
         return enemymanager;
     }
+    public PlayerBase getPlayerBase(){
+        return playerbase;
+    }
     
     // RESET STAGE CONDITION
     public void resetCondition(){
@@ -248,22 +231,4 @@ public class GamePanel extends JPanel implements Runnable{
         onStage = false;
         gameOver = false;
     }
-    public int getPosxPlayer(){
-        return player.getPosX();
-    }
-    public int getPosyPlayer(){
-        return player.getPosY();
-    }
-    public ArrayList<Tower> getTowerArrayList(){
-        return towermanager.getTowerArrayList();
-    }
-    public String getTileMapGP(int x,int y){
-        return mapsmanager.getMapTile(x, y);
-    }
-    public void setUpTower(int x,int y){
-        towermanager.addTower();
-        towermanager.setWorldxTower(x);
-        towermanager.setWorldyTower(y);
-    }
-    
 }

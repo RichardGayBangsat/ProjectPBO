@@ -5,7 +5,6 @@
 package Object;
 
 import MainPackage.GamePanel;
-import Sound.Sound;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -19,12 +18,11 @@ import java.util.ArrayList;
 public abstract class Enemy extends Character{
     protected int level;
     protected int characterMaxHp, characterHp; // HP
+    protected int boxX, boxY, boxSize;
     protected ArrayList<BufferedImage> animation = new ArrayList<>();
     String direction;
     int spriteCounter;
     int spriteIndex;
-    
-    Sound soundeffect=new Sound("/assets/sfx/hiteffect.wav");
     
     public Enemy(GamePanel gamepanel, int level, int attack, int hp, int speed){
         this.gamepanel = gamepanel;
@@ -32,6 +30,7 @@ public abstract class Enemy extends Character{
         this.posY = gamepanel.tileSize * 5;
         this.height = gamepanel.tileSize;
         this.width = gamepanel.tileSize;
+        setCollisionBox();
         this.direction = "left";
         this.level = level;
         
@@ -44,7 +43,13 @@ public abstract class Enemy extends Character{
         this.characterMaxHp = hp + (level * 50);
         this.characterHp = this.characterMaxHp;
     }
-    
+    public void setCollisionBox(){
+        int centerX = posX + width/2;
+        int centerY = posY + height/2;
+        boxSize = gamepanel.tileSize / 2;
+        boxX = centerX - boxSize / 2;
+        boxY = centerY - boxSize / 2;
+    }
     public abstract void update();
     public void updatePosition(){
         if(posX == gamepanel.tileSize * 11 && posY == gamepanel.tileSize * 5){
@@ -58,10 +63,13 @@ public abstract class Enemy extends Character{
     public void move(){
         if(direction.equals("up")){
             posY -= characterSpeed;
+            boxY -= characterSpeed;
         }else if(direction.equals("left")){
             posX -= characterSpeed;
+            boxX -= characterSpeed;
         }else if(direction.equals("down")){
             posY += characterSpeed;
+            boxY += characterSpeed;
         }
     }
     public abstract void draw(Graphics2D g2);
@@ -89,36 +97,20 @@ public abstract class Enemy extends Character{
         return false;
     }
     public boolean isAttacked(int x, int y, int width, int height, int damage){
-        if(posX >= x && posX <= x + width && posY >= y && posY <= y + height || 
-            posX + this.width >= x && posX + this.width <= x + width && posY + this.height >= y && this.height <= y + height){
-                if(characterHp - damage < 0){
-                    characterHp = 0;
-                }else{
-                    characterHp -= damage;
-                }
-                System.out.println("mulai");
-                soundeffect.play();
+        if(boxX >= x && boxX <= x + width && boxY >= y && boxY <= y + height || 
+            boxX + boxSize >= x && boxX + boxSize <= x + width && boxY + boxSize >= y && boxY + boxSize <= y + height ||
+            boxX >= x && boxX <= x + width && boxY + boxSize >= y && boxY + boxSize <= y + height || 
+            boxX + boxSize >= x && boxX + boxSize <= x + width && boxY >= y && boxY <= y + height){
+                Damaged(damage);
+                return true;
         }
-        if(!isDead()) return false;
-        return true;
+        return false;
     }
-    public boolean isAttackedProjectile(int x, int y, int width, int height, int damage,ArrayList<Projectile> a ,int index){
-        if(posX >= x && posX <= x + width && posY >= y && posY <= y + height || 
-            posX + this.width >= x && posX + this.width <= x + width && posY + this.height >= y && this.height <= y + height){
-                if(characterHp - damage < 0){
-                    characterHp = 0;
-                    soundeffect.play();
-                }else{
-                    characterHp -= damage;
-                    soundeffect.play();
-                }
-                
-                soundeffect.play();
-                if(!a.isEmpty()){
-                    a.remove(index);
-                }
+    public void Damaged(int damage){
+        if(characterHp - damage < 0){
+            characterHp = 0;
+        }else{
+            characterHp -= damage;
         }
-        if(!isDead()) return false;
-        return true;
     }
 }
