@@ -51,16 +51,30 @@ public class PlayerBuild {
     public String getName(){
         return name;
     }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
     
     public void setButtonPosition(int x, int y, int height, int width){
         this.x = x;
         this.y = y;
         this.height = height;
         this.width = width;
+    }
+    public void setLevel(int level) {
+        this.level = level;
+        // setup damage 
+        if(name == "ATCK"){
+            System.out.println("setattack");
+            player.setAttack(player.getAttack() + ((level-1) * 5));
+            System.out.println(player.getAttack());
+        }else if(name == "ASPD"){
+            if(player.getAttackSpeed() > 1){
+                player.setAttackSpeed(player.getAttackSpeed() - (level-1));
+            }else{
+                level -= 1;
+                System.out.println("level max");
+            }
+        }else if(name == "CRIT"){
+            player.setCritDamage(player.getCritDamage() + ((level-1) * 10));
+        }
     }
     
     public void levelUp(PlayerBase playerbase){

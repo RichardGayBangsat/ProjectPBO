@@ -29,6 +29,8 @@ public class SaveLoad implements Serializable{
         data.gold=temp.getCoin();
         data.life=temp.getLife();
         data.stage=temp.getStageNumber();
+        data.Towers=gp.getTowermanager().getTowers();
+        System.out.println(data.Towers.size());
         for (int i = 0; i < temp.getAllitems().size(); i++) {
              data.build[i]=temp.getPlayer().getBuilds().get(i).getLevel();
         }
@@ -61,4 +63,5 @@ public class SaveLoad implements Serializable{
     public void addScore(int stage){
         data.getScoreBoards().add(new ScoreBoard(stage));
     }
+    
 }

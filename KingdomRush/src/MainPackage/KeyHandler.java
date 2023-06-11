@@ -56,6 +56,7 @@ public class KeyHandler implements KeyListener{
                     gamepanel.playerbase.setStage(data.getStage());
                     ArrayList<Item> ItemLoad=gamepanel.playerbase.getAllitems();
                     ArrayList<PlayerBuild> playerBuilds=gamepanel.player.getBuilds();
+                    gamepanel.towermanager.setTowers(data.getTowers());
                     for (int i = 0; i < ItemLoad.size(); i++) {
                         ItemLoad.get(i).setLevel(data.getItem()[i]);
                     }
@@ -63,6 +64,12 @@ public class KeyHandler implements KeyListener{
                     for (int i = 0; i < ItemLoad.size(); i++) {
                         playerBuilds.get(i).setLevel(data.getBuild()[i]);
                     }
+                    System.out.println(gamepanel.towermanager.getTowers().get("9$5").getHeight());
+                    System.out.println(gamepanel.towermanager.getTowers().get("9$5").getWidth());
+                    gamepanel.towermanager.getTowers().get("9$5").setHeight(gamepanel.tileSize + gamepanel.tileSize / 2);
+                    gamepanel.towermanager.getTowers().get("9$5").setWidth(gamepanel.tileSize);
+                    System.out.println(gamepanel.towermanager.getTowers().get("9$5").getHeight());
+                    System.out.println(gamepanel.towermanager.getTowers().get("9$5").getWidth());
                     gamepanel.playerbase.setItems(ItemLoad);
                     gamepanel.player.setBuilds(playerBuilds);
                     gamepanel.gameState = gamepanel.playState;

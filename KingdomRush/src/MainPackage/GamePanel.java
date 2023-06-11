@@ -221,6 +221,15 @@ public class GamePanel extends JPanel implements Runnable{
     public PlayerBase getPlayerBase(){
         return playerbase;
     }
+
+    public TowerManager getTowermanager() {
+        return towermanager;
+    }
+
+    public void setTowermanager(TowerManager towermanager) {
+        this.towermanager = towermanager;
+    }
+    
     
     // RESET STAGE CONDITION
     public void resetCondition(){

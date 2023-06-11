@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
  *
  * @author richa
  */
-public class Tower extends Object{
+public class Tower extends Object implements Serializable{
     // HOT CONDITION & RANGE
     protected boolean shootable;
     protected int maxRange = 5 * 60;

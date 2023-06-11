@@ -4,7 +4,9 @@
  */
 package Data;
 
+import Object.Tower;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.PriorityQueue;
 
 /**
@@ -19,7 +21,7 @@ public class DataStorage implements Serializable{
     int[] item=new int[3];
     //Dari Player
     int[] build=new int[3];
-    
+    HashMap<String, Tower> Towers;
     PriorityQueue<ScoreBoard> scoreBoards=new PriorityQueue<>();
 
     public int getStage() {
@@ -68,6 +70,14 @@ public class DataStorage implements Serializable{
 
     public void setScoreBoards(PriorityQueue<ScoreBoard> scoreBoards) {
         this.scoreBoards = scoreBoards;
+    }
+
+    public HashMap<String, Tower> getTowers() {
+        return Towers;
+    }
+
+    public void setTowers(HashMap<String, Tower> Towers) {
+        this.Towers = Towers;
     }
     
 }
