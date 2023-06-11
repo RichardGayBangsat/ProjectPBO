@@ -29,9 +29,9 @@ public class EnemyManager {
         enemies = new ArrayList<>();
         this.gamepanel = gamepanel;
         this.playerbase = playerbase;
-        this.numsOfEnemy = 4;
+        this.numsOfEnemy = 5;
         this.enemyCounter = numsOfEnemy;
-        this.spawnCD = 80;
+        this.spawnCD = 60;
         this.spawnCounter = 1;
         setEnemyLevel();
     }
@@ -102,7 +102,7 @@ public class EnemyManager {
     }
     public void setUpNewStage(){
         playerbase.setNextStage();
-        numsOfEnemy += 2;
+        numsOfEnemy += 5;
         enemyCounter = numsOfEnemy;
         spawnCounter = 1;
         setEnemyLevel();

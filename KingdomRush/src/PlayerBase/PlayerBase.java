@@ -121,6 +121,27 @@ public class PlayerBase {
     public void setCoin(int coin){
         this.coin = coin;
     }
+
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setStage(int stage) {
+        this.stage = stage;
+    }
+
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
+    }
+    
     public void minLive(){
         this.life--;
         if(life == 0){

@@ -181,6 +181,11 @@ public class Player extends Character{
     public ArrayList<PlayerBuild> getBuilds(){
         return builds;
     }
+
+    public void setBuilds(ArrayList<PlayerBuild> builds) {
+        this.builds = builds;
+    }
+    
     
     public String getStatusByString(String value){
         String result = value;

@@ -4,6 +4,7 @@
  */
 package MainPackage;
 
+import Data.SaveLoad;
 import java.awt.event.MouseEvent;
 import java.awt.event.*;
 
@@ -13,9 +14,11 @@ import java.awt.event.*;
  */
 public class MouseHandler implements MouseListener, MouseMotionListener{
     GamePanel gamepanel;
+    SaveLoad saveLoad;
     
     public MouseHandler(GamePanel gamepanel){
         this.gamepanel = gamepanel;
+        saveLoad =new SaveLoad(gamepanel);
     }
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -70,6 +73,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener{
                 if(index == 0){
                     gamepanel.gameState = gamepanel.playState;
                 }else if(index == 1){
+                    saveLoad.save();
                     setNewGame();
                 }else if(index == 2){
                     setNewGame();

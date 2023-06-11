@@ -4,8 +4,13 @@
  */
 package MainPackage;
 
+import Data.DataStorage;
+import Data.SaveLoad;
+import Object.PlayerBuild;
+import PlayerBase.Item;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,9 +19,10 @@ import java.awt.event.KeyListener;
 public class KeyHandler implements KeyListener{
     GamePanel gamepanel;
     public boolean up, down, left, right;
-    
+    SaveLoad saveLoad;
     public KeyHandler(GamePanel gamepanel){
         this.gamepanel = gamepanel;
+        saveLoad =new SaveLoad(gamepanel);
     }
     
     @Override
@@ -42,7 +48,26 @@ public class KeyHandler implements KeyListener{
                 if(currentMode == 0){
                     gamepanel.startNewGame(new Game(gamepanel, this));
                     gamepanel.gameState = gamepanel.playState;
-                }else if(currentMode == 2){
+                }else if(currentMode==1){
+                    DataStorage data=saveLoad.load();
+                    gamepanel.startNewGame(new Game(gamepanel, this));
+                    gamepanel.playerbase.setCoin(data.getGold());
+                    gamepanel.playerbase.setLife(data.getLife());
+                    gamepanel.playerbase.setStage(data.getStage());
+                    ArrayList<Item> ItemLoad=gamepanel.playerbase.getAllitems();
+                    ArrayList<PlayerBuild> playerBuilds=gamepanel.player.getBuilds();
+                    for (int i = 0; i < ItemLoad.size(); i++) {
+                        ItemLoad.get(i).setLevel(data.getItem()[i]);
+                    }
+                    gamepanel.playerbase.setItems(ItemLoad);
+                    for (int i = 0; i < ItemLoad.size(); i++) {
+                        playerBuilds.get(i).setLevel(data.getBuild()[i]);
+                    }
+                    gamepanel.playerbase.setItems(ItemLoad);
+                    gamepanel.player.setBuilds(playerBuilds);
+                    gamepanel.gameState = gamepanel.playState;
+                }
+                else if(currentMode == 2){
                     System.exit(0);
                 }
             }
