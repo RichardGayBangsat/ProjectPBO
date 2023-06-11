@@ -78,4 +78,13 @@ public class TowerManager {
             }
         }
     }
+
+    public HashMap<String, Tower> getTowers() {
+        return towers;
+    }
+
+    public void setTowers(HashMap<String, Tower> towers) {
+        this.towers = towers;
+    }
+    
 }
