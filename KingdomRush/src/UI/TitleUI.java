@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package UI;
+import HighscoreData.HighscoreBanner;
 import MainPackage.GamePanel;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -25,12 +26,26 @@ public class TitleUI {
     protected Color fontColor;
     protected BufferedImage backgroundImage;
     protected BufferedImage bannerBackground;
+    protected int bannerWidth,bannerHeight,screenX,screenY;
+    
+    protected HighscoreBanner HBanner;
+    protected boolean onLeaderboard;
     
     public TitleUI (GamePanel gamepanel){
         this.gamepanel = gamepanel;
+        HBanner = new HighscoreBanner();
+        setupDefault();
+    }
+    public void setupDefault(){
         comNum = 0;
+        bannerWidth = gamepanel.tileSize * 10;
+        bannerHeight = gamepanel.tileSize * 6;
+        screenX = gamepanel.screenWidth / 2 - bannerWidth / 2;
+        screenY = gamepanel.screenHeight / 2 - bannerHeight / 2 - gamepanel.tileSize / 2;
+        onLeaderboard = false;
         
-        
+        HBanner.setLeaderboardButton(screenX + bannerWidth - gamepanel.tileSize * 2, screenY + bannerHeight - gamepanel.tileSize * 2, gamepanel.tileSize);
+        HBanner.setBackButton(screenX + gamepanel.tileSize, screenY + gamepanel.tileSize, gamepanel.tileSize);
         // SET FONT
         try{
             InputStream inputstream = getClass().getResourceAsStream("/assets/font/LuckiestGuy-Regular.ttf");
@@ -56,14 +71,16 @@ public class TitleUI {
         fontColor = new Color(255,255,204);
         
         g2.drawImage(backgroundImage, 0, 0, gamepanel.screenWidth, gamepanel.screenHeight, null);
-        // SET BANNER HEIGHT, WIDTH, X , Y
-        int bannerWidth = gamepanel.tileSize * 10;
-        int bannerHeight = gamepanel.tileSize * 6;
-        int screenX = gamepanel.screenWidth / 2 - bannerWidth / 2;
-        int screenY = gamepanel.screenHeight / 2 - bannerHeight / 2 - gamepanel.tileSize / 2;
         // ===============================
         g2.drawImage(bannerBackground, screenX, screenY, bannerWidth, bannerHeight, null);
-        drawTitle(bannerHeight, bannerWidth, screenX, screenY);
+        
+        if(onLeaderboard == false){
+            drawTitle(bannerHeight, bannerWidth, screenX, screenY);
+            HBanner.drawLeaderboardButton(g2);
+        }else{
+            HBanner.drawExitButton(g2);
+            HBanner.drawScoreBoard(g2);
+        }
     }
     public void drawTitle(int bannerHeigth, int bannerWidth, int screenX, int screenY){
         
@@ -106,12 +123,27 @@ public class TitleUI {
             g2.drawString(">", x - gamepanel.tileSize, y); // set text start X position - tilesize
         }
     }
+    
     public int getXforCenteredText(String text){
         // GET FONT LENGTH
         int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
         // GENERATE X POSITION FOR CENTERED TEXT
         int x = gamepanel.screenWidth/2 - length/2;
         return x;
+    }
+    // CHECKER
+    public void isLeaderboardButtonPressed(int x, int y){
+        if(HBanner.isButtonPressed(x,y)){
+            onLeaderboard = true;
+        }
+    }
+    public void isExitButtonzpressed(int x, int y){
+        if(HBanner.isExitButtonPressed(x, y)){
+            onLeaderboard = false;
+        }
+    }
+    public boolean isOnLeaderboard(){
+        return onLeaderboard;
     }
     
     // GETTER SETTER - comNum;

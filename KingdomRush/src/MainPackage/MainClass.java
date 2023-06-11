@@ -3,7 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package MainPackage;
+import HighscoreData.HighscoreBanner;
+import HighscoreData.ScoreData;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 import javax.swing.JFrame;
+import javax.xml.transform.Templates;
 
 /**
  *

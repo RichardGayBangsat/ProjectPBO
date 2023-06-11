@@ -75,6 +75,12 @@ public class MouseHandler implements MouseListener, MouseMotionListener{
                     setNewGame();
                 }
             }
+        }else if(gamepanel.gameState == gamepanel.titleState){
+            if(!gamepanel.titleUI.isOnLeaderboard()){
+                gamepanel.titleUI.isLeaderboardButtonPressed(mousePositionX, mousePositionY);
+            }else{
+                gamepanel.titleUI.isExitButtonzpressed(mousePositionX, mousePositionY);
+            }
         }
     }
 

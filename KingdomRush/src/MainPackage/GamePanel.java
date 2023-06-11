@@ -5,9 +5,7 @@
 package MainPackage;
 import PlayerBase.PlayerBase;
 import Maps.MapsManager;
-import Object.EnemyManager;
-import Object.Player;
-import Object.TowerManager;
+import Object.*;
 import PlayerBase.Shop;
 import UI.*;
 import java.awt.*;
